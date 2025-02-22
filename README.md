@@ -29,7 +29,6 @@ An interactive web application that helps educators create detailed lesson plans
 ```bash
 
 git clone https://github.com/Rakesh-116/AI-Lesson-Planner.git
-cd lesson-planner
 ```
 
 2. Install dependencies:
