@@ -39,6 +39,12 @@ npm install
 
 3. Create a Gemini AI API key and use it for the project.
 
+4. Run the development server:
+
+```bash
+npm run dev
+```
+
 ## 💻 Usage
 
 1. Open the application in your browser
