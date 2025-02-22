@@ -67,3 +67,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## 🔗 Links
 
 - [GitHub Repository](https://github.com/Rakesh-116/AI-Lesson-Planner)
+- [Live Demo](https://ai-lesson-planner-wine.vercel.app/)
