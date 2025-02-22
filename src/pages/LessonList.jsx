@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import {
@@ -14,6 +14,7 @@ import {
   DialogTitle,
 } from "../components/ui/dialog";
 import { Trash2 } from "lucide-react";
+import { useReactToPrint } from "react-to-print";
 
 export function LessonList() {
   const navigate = useNavigate();
@@ -21,6 +22,8 @@ export function LessonList() {
   const [selectedLesson, setSelectedLesson] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editedLesson, setEditedLesson] = useState(null);
+  const contentRef = useRef(null);
+  const [isEditMode, setIsEditMode] = useState(false);
 
   useEffect(() => {
     const allLessons = [];
@@ -78,6 +81,10 @@ export function LessonList() {
     );
     setLessons(updatedLessons);
   };
+
+  const handlePrint = useReactToPrint({
+    contentRef,
+  });
 
   return (
     <div className="min-h-screen mx-auto px-20 py-10 w-full">
@@ -144,165 +151,224 @@ export function LessonList() {
         </div>
       )}
 
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen} className="">
-        {isModalOpen && (
-          <div className="fixed inset-0 bg-black/50 z-50 p-4">
-            <DialogContent className="max-w-2xl h-[80vh] overflow-y-auto">
-              <DialogHeader>
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        {isModalOpen && editedLesson && (
+          <DialogContent className="max-w-2xl h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <div className="flex justify-between items-center">
                 <DialogTitle>Lesson Details</DialogTitle>
-              </DialogHeader>
-              {editedLesson && (
-                <div className="space-y-4">
-                  <div>
-                    <label className="font-bold">Topic:</label>
-                    <input
-                      className="w-full p-2 border rounded"
-                      value={editedLesson.topic}
-                      onChange={(e) =>
-                        setEditedLesson({
-                          ...editedLesson,
-                          topic: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="font-bold">Subject:</label>
-                    <input
-                      className="w-full p-2 border rounded"
-                      value={editedLesson.subject}
-                      onChange={(e) =>
-                        setEditedLesson({
-                          ...editedLesson,
-                          subject: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="font-bold">Grade Level:</label>
-                    <input
-                      className="w-full p-2 border rounded"
-                      value={editedLesson.gradeLevel}
-                      onChange={(e) =>
-                        setEditedLesson({
-                          ...editedLesson,
-                          gradeLevel: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="font-bold">Date:</label>
-                    <input
-                      type="date"
-                      className="w-full p-2 border rounded"
-                      value={editedLesson.date}
-                      onChange={(e) =>
-                        setEditedLesson({
-                          ...editedLesson,
-                          date: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="font-bold">Summary:</label>
-                    <textarea
-                      className="w-full p-2 border rounded"
-                      value={editedLesson.summary}
-                      rows={4}
-                      onChange={(e) =>
-                        setEditedLesson({
-                          ...editedLesson,
-                          summary: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="font-bold">Learning Objectives:</label>
-                    <textarea
-                      className="w-full p-2 border rounded"
-                      value={editedLesson.learningObjectives}
-                      rows={3}
-                      onChange={(e) =>
-                        setEditedLesson({
-                          ...editedLesson,
-                          learningObjectives: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="font-bold">Materials Needed:</label>
-                    <textarea
-                      className="w-full p-2 border rounded"
-                      value={editedLesson.materialsNeeded}
-                      rows={3}
-                      onChange={(e) =>
-                        setEditedLesson({
-                          ...editedLesson,
-                          materialsNeeded: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="font-bold">Lesson Structure:</label>
-                    <textarea
-                      className="w-full p-2 border rounded"
-                      value={editedLesson.lessonStructure}
-                      rows={4}
-                      onChange={(e) =>
-                        setEditedLesson({
-                          ...editedLesson,
-                          lessonStructure: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="font-bold">Assessment Methods:</label>
-                    <textarea
-                      className="w-full p-2 border rounded"
-                      value={editedLesson.assessmentMethods}
-                      rows={3}
-                      onChange={(e) =>
-                        setEditedLesson({
-                          ...editedLesson,
-                          assessmentMethods: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="font-bold">Additional Notes:</label>
-                    <textarea
-                      className="w-full p-2 border rounded"
-                      value={editedLesson.additionalNotes}
-                      rows={3}
-                      onChange={(e) =>
-                        setEditedLesson({
-                          ...editedLesson,
-                          additionalNotes: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => setIsModalOpen(false)}
-                    >
-                      Cancel
-                    </Button>
-                    <Button onClick={handleSave}>Save Changes</Button>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsEditMode(!isEditMode)}
+                  >
+                    {isEditMode ? "View Mode" : "Edit Mode"}
+                  </Button>
                 </div>
+              </div>
+            </DialogHeader>
+
+            <div
+              ref={contentRef}
+              className="p-4 space-y-4"
+              style={{ display: isEditMode ? "none" : "block" }}
+            >
+              <h2 className="text-2xl font-bold">{editedLesson.topic}</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="font-bold">Subject:</label>
+                  <p className="mt-1">{editedLesson.subject}</p>
+                </div>
+                <div>
+                  <label className="font-bold">Grade Level:</label>
+                  <p className="mt-1">{editedLesson.gradeLevel}</p>
+                </div>
+                <div>
+                  <label className="font-bold">Date:</label>
+                  <p className="mt-1">{editedLesson.date}</p>
+                </div>
+                <div>
+                  <label className="font-bold">Summary:</label>
+                  <p className="mt-1">{editedLesson.summary}</p>
+                </div>
+                <div>
+                  <label className="font-bold">Learning Objectives:</label>
+                  <p className="mt-1">{editedLesson.learningObjectives}</p>
+                </div>
+                <div>
+                  <label className="font-bold">Materials Needed:</label>
+                  <p className="mt-1">{editedLesson.materialsNeeded}</p>
+                </div>
+                <div>
+                  <label className="font-bold">Lesson Structure:</label>
+                  <p className="mt-1">{editedLesson.lessonStructure}</p>
+                </div>
+                <div>
+                  <label className="font-bold">Assessment Methods:</label>
+                  <p className="mt-1">{editedLesson.assessmentMethods}</p>
+                </div>
+                <div>
+                  <label className="font-bold">Additional Notes:</label>
+                  <p className="mt-1">{editedLesson.additionalNotes}</p>
+                </div>
+              </div>
+            </div>
+
+            {isEditMode && (
+              <div className="space-y-4">
+                <div>
+                  <label className="font-bold">Topic:</label>
+                  <input
+                    className="w-full p-2 border rounded"
+                    value={editedLesson.topic}
+                    onChange={(e) =>
+                      setEditedLesson({
+                        ...editedLesson,
+                        topic: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="font-bold">Subject:</label>
+                  <input
+                    className="w-full p-2 border rounded"
+                    value={editedLesson.subject}
+                    onChange={(e) =>
+                      setEditedLesson({
+                        ...editedLesson,
+                        subject: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="font-bold">Grade Level:</label>
+                  <input
+                    className="w-full p-2 border rounded"
+                    value={editedLesson.gradeLevel}
+                    onChange={(e) =>
+                      setEditedLesson({
+                        ...editedLesson,
+                        gradeLevel: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="font-bold">Date:</label>
+                  <input
+                    type="date"
+                    className="w-full p-2 border rounded"
+                    value={editedLesson.date}
+                    onChange={(e) =>
+                      setEditedLesson({
+                        ...editedLesson,
+                        date: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="font-bold">Summary:</label>
+                  <textarea
+                    className="w-full p-2 border rounded"
+                    value={editedLesson.summary}
+                    rows={4}
+                    onChange={(e) =>
+                      setEditedLesson({
+                        ...editedLesson,
+                        summary: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="font-bold">Learning Objectives:</label>
+                  <textarea
+                    className="w-full p-2 border rounded"
+                    value={editedLesson.learningObjectives}
+                    rows={3}
+                    onChange={(e) =>
+                      setEditedLesson({
+                        ...editedLesson,
+                        learningObjectives: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="font-bold">Materials Needed:</label>
+                  <textarea
+                    className="w-full p-2 border rounded"
+                    value={editedLesson.materialsNeeded}
+                    rows={3}
+                    onChange={(e) =>
+                      setEditedLesson({
+                        ...editedLesson,
+                        materialsNeeded: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="font-bold">Lesson Structure:</label>
+                  <textarea
+                    className="w-full p-2 border rounded"
+                    value={editedLesson.lessonStructure}
+                    rows={4}
+                    onChange={(e) =>
+                      setEditedLesson({
+                        ...editedLesson,
+                        lessonStructure: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="font-bold">Assessment Methods:</label>
+                  <textarea
+                    className="w-full p-2 border rounded"
+                    value={editedLesson.assessmentMethods}
+                    rows={3}
+                    onChange={(e) =>
+                      setEditedLesson({
+                        ...editedLesson,
+                        assessmentMethods: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="font-bold">Additional Notes:</label>
+                  <textarea
+                    className="w-full p-2 border rounded"
+                    value={editedLesson.additionalNotes}
+                    rows={3}
+                    onChange={(e) =>
+                      setEditedLesson({
+                        ...editedLesson,
+                        additionalNotes: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="flex justify-end gap-2 mt-4">
+              <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+                Cancel
+              </Button>
+              {!isEditMode && (
+                <Button variant="outline" onClick={handlePrint}>
+                  Download PDF
+                </Button>
               )}
-            </DialogContent>
-          </div>
+              {isEditMode && <Button onClick={handleSave}>Save Changes</Button>}
+            </div>
+          </DialogContent>
         )}
       </Dialog>
     </div>
